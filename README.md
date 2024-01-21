@@ -296,7 +296,7 @@ Thus, the new complete code will be:
 ```
 using UnityEngine;
 
-public class Inimigo_Radar : MonoBehaviour
+public class Enemy_Radar : MonoBehaviour
 {
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject iconPosition;
