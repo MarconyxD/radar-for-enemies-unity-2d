@@ -1,5 +1,5 @@
 # English version
-[Versão em Português] (#Versão-em-Português)
+[Fancy link](wiki#Versão-em-Português)
 
 # Creating a radar for on-screen enemies in Unity in a 2D game
 
