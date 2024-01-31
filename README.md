@@ -1,5 +1,5 @@
-# English Version
-[Versão em Português] (#-Versão-em-Português)
+# English version
+[Versão em Português] (#Versão-em-Português)
 
 # Creating a radar for on-screen enemies in Unity in a 2D game
 
@@ -361,7 +361,7 @@ We can test with one enemy and add several enemies to make sure everything is wo
 https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/a4d6e2e5-a279-442f-87d2-04831c1a375f
 
 # Versão em Português
-[English version] (#-English-Version)
+[English version] (#English-version)
 
 # Criando um radar para inimigos na tela na Unity em um jogo 2D
 
