@@ -1,3 +1,6 @@
+# English Version
+[Versão em Português] (#-Versão-em-Português)
+
 # Creating a radar for on-screen enemies in Unity in a 2D game
 
 The version of Unity used in this project was 2022.3.4f1. The project was created as a 2D project.
@@ -357,3 +360,364 @@ We can test with one enemy and add several enemies to make sure everything is wo
 
 https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/a4d6e2e5-a279-442f-87d2-04831c1a375f
 
+# Versão em Português
+[English version] (#-English-Version)
+
+# Criando um radar para inimigos na tela na Unity em um jogo 2D
+
+A versão da Unity utilizada neste projeto foi a 2022.3.4f1. O projeto foi criado como sendo um projeto 2D.
+
+Em alguns tipos de jogos se torna interessante a aplicação da mecânica de radar para a identificação da posição e aproximação dos inimigos. Esta se torna uma ferramenta útil para a tomada de decisões do usuário, uma vez que o mesmo possa se preparar de alguma forma antes mesmo do inimigo aparecer em sua tela.
+
+## Ícone de proximidade
+
+Para começar, é necessário adicionar dois GameObject à cena, um para representar o jogador e outro para representar o inimigo. Adicione também um Sprite Renderer a cada um dos objetos, para que o mesmo possa ser renderizado na tela. Utilize qualquer imagem para a representação dos dois personagens. No meu caso, utilizei dois quadrados na cor preta. É importante que os personagens sejam renderizados, pois iremos utilizar a identificação desta renderização na tela como condição para identificar se o inimigo está sendo exibido ou não.
+
+![01](https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/fce9308b-8602-463a-8ab3-5fc1b91d3f25)
+
+Observe que mantive um dos objetos na área da câmera e o outro não.
+
+Em seguida, crie um script e nomeie-o da forma que desejar. Neste script iremos implementar a lógica para a exibição do radar. Primeiro, é necessário criar as variáveis para identificar o objeto do jogador, o ícone (que iremos criar uma Imagem no Canvas), o Renderer do próprio objeto e um Vector3 para salvarmos a posição do ícone na tela. Utilizaremos [SerializeField] para que possamos definir os parâmetros pelo Inspector mas mantendo-os como private.
+
+```
+[SerializeField] private GameObject player;
+[SerializeField] private GameObject iconPosition;
+private Renderer rd;
+private Vector3 localIconScreen;
+```
+
+No método Start() queremos que, ao iniciar a aplicação, seja definido que o Renderer nomeado como rd é pertencente ao objeto que possuir o script, então, realizamos sua declaração.
+
+```
+void Start()
+{
+    rd = GetComponent<Renderer>();
+}
+```
+
+A seguir, precisamos criar um método para exibir o ícone do radar na tela, e ele deve ser atualizado a todo o momento, então este método deve ser chamado em Update(). Irei dar o nome de ScreenIcon() para este método.
+
+```
+void Update()
+{
+    ScreenIcon();
+}
+```
+
+O método ScreenIcon() será do tipo void e seu modificador de acesso pode ser do tipo private. Nele, como este script será adicionado ao inimigo, começamos verificando se o inimigo não está sendo renderizado na tela, identificando se rd.isVisible é igual a false.
+
+```
+private void ScreenIcon()
+{ 
+    if (rd.isVisible == false){}
+}
+```
+
+Ao verificar que o inimigo não está sendo exibido, deve-se verificar se o ícone já está sendo exibido ou não. Como este método é chamado no Update() a cada momento, devemos levar em consideração sua chamada constante, por isso é interessante sempre verificar o atual estado de cada elemento. Portanto, verifica-se se o ícone já está ativo e se a distância entre o jogador e o inimigo é menor que determinado valor. Neste caso, coloquei esta distância como sendo 20. Para determinar a distância utiliza-se Vector3.Distance(), que determina a distância entre dois pontos com base em suas localizações. Neste caso, o primeiro ponto é a localização do próprio inimigo e o segundo ponto é a localização do jogador. Primeiro, verifica-se se o ícone NÃO está ativo e se a distância É MENOR OU IGUAL a 20, para ativar o ícone, em caso positivo. Depois, verifica-se se o ícone ESTÁ ativo e se a distância é maior que 20, para desativá-lo, pois o inimigo estar muito longe.
+
+```
+if (iconPosition.activeSelf == false && Vector3.Distance(transform.position, player.transform.position) <= 20f)
+{
+    iconPosition.SetActive(true);
+}
+
+if (iconPosition.activeSelf == true && Vector3.Distance(transform.position, player.transform.position) > 20f)
+{
+    iconPosition.SetActive(false);
+}
+```
+
+Assim, conseguimos ativar o ícone quando o inimigo se aproximar e desativá-lo quando o jogador e/ou o inimigo se afastarem.
+
+Porém, ainda precisamos adicionar um else para desativar o ícone quando o inimimo estiver sendo renderizado, ou seja, estiver na tela. Então, se o inimigo estiver na tela sendo renderizado e o ícone estiver ativo, o ícone deve ser desativado.
+
+```
+else
+{
+    if (iconPosition.activeSelf == true)
+    {
+        iconPosition.SetActive(false);
+    }
+}
+```
+
+O código completo do método Screen Icon, até agora, é o seguinte:
+
+```
+private void ScreenIcon()
+{
+    if (rd.isVisible == false)
+    {
+        if (iconPosition.activeSelf == false && Vector3.Distance(transform.position, player.transform.position) <= 20f)
+        {
+            iconPosition.SetActive(true);
+        }
+
+        if (iconPosition.activeSelf == true && Vector3.Distance(transform.position, player.transform.position) > 20f)
+        {
+            iconPosition.SetActive(false);
+        }
+
+    else
+    {
+        if (iconPosition.activeSelf == true
+        {
+            iconPosition.SetActive(false);
+        }
+    }
+}
+```
+
+Não se esqueça de salvar seu script após realizar todas as alterações, senão as novas linhas de código não serão executadas na Unity!
+
+O próximo passo é criar a Image do ícone na cena. Adicione um UI -> Image à cena. Utilize alguma imagem para representar o ícone. Neste caso, irei utilizar um círculo vermelho. 
+
+![02](https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/aa0f046b-2944-4741-a533-953c18bf077d)
+
+Após fazer isso, desabilite a Image, para que o jogo seja iniciado sem o ícone aparecer. Assim, os objetos que teremos em cena serão estes:
+
+![03](https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/e9542f02-5b33-4a36-918c-0e155d24aaf4)
+
+O Canvas e o EventSystem são criados automaticamente ao criar a Image. Alterei o nome da minha Image para Icon.
+
+Agora, o próximo passo é adicionar o script que criamos como componente do inimigo e definir os parâmetros restantes no Inspector.
+
+![04](https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/db1db608-572b-41bd-b122-0968a18ca69f)
+
+Para o parâmetro player, arraste o GameObject do player da cena. Para iconPosition, arraste a Image com nome icon que acabamos de criar.
+
+Agora, podemos testar. Para realizar o teste, garanta que o inimigo não esteja aparecendo nem no Editor e nem no Player. Ele não pode ser renderizado em nenhuma parte da tela. Em seguida, dê Play e altere a posição do inimigo apenas pelo seu Transform. Faça-o se aproximar do jogador, se distanciar além do limite definido no script e aparecer na tela, para observar o ícone sumindo e aparecendo.
+
+https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/cb7a2c6a-7c9e-4fed-bc27-e7dc1636f74b
+
+Mas não é interessante que o ícone apareça no meio da tela, correto? Então, o próximo passo é fazermos com que ele apareça apenas no canto da tela e na direção de onde o inimigo estiver vindo.
+
+## Direction and proximity icon
+
+Iremos continuar utilizando o mesmo script, mas iremos adicionar novas linhas de código.
+
+Vamos adicionar mais funções ao if do método ScreenIcon. Após as duas verificações do ícone estar ou não estar ativo, precisamos criar três novos parâmetros: um para a direção que o inimigo está com relação ao jogador, um para uma layer_mask que iremos utilizar para identificar a área da câmera e outro para um Raycast2D que será utilizado para identificar os limites da câmera onde o ícone será criado.
+
+```
+Vector2 direction = player.transform.position - transform.position;
+int layer_mask = LayerMask.GetMask("CamBox");
+RaycastHit2D ray = Physics2D.Raycast(transform.position, direction, 50f, layer_mask);
+```
+
+A direção é calculada pela diferença entre a posição do jogador e a posição do inimigo. A layer mask é definida pela layer mask que já existir com o nome apresentado entre parênteses, que no caso é “CamBox”. Ainda não criamos esta layer mask. Iremos fazer isto logo em seguida. Já o Raycast2D é como uma linha que sempre sai de uma origem, aponta em uma direção, tem um comprimento definido e pertence a uma layer mask. Neste caso, definimos sua origem como sendo o inimigo, a direção sendo a calculada anteriormente, ou seja, ela irá apontar para o jogador, o tamanho foi definido como sendo 50, que é um valor arbitrário que pode ser alterado, caso desejado, e a layer mask é a que definimos anteriormente, sendo a “CamBox”.
+
+Primeiros, verificamos se o Raycast está colidindo com algo. Neste momento, ele não irá colidir com nada, pois ainda não adicionamos o colisor. Mas queremos que ele colida, então, em caso afirmativo, ele irá verificar se o colisor pertence a um objeto com a tag MainCamera. Caso pertencer, o ponto onde a colisão aconteceu será convertido para a coordenada da tela de exibição e salvo no parâmetro localIconScreen, que declaramos lá no começo mas ainda não tínhamos utilizado. Em seguida, atualizamos a posição do ícone para que seja igual à de localIconScreen, ou seja, igual ao ponto de colisão do Raycast com o colisor da câmera.
+
+```
+if (ray.collider != null)
+{
+    if (ray.collider.tag == "MainCamera")
+    {
+        localIconScreen = Camera.main.WorldToScreenPoint(ray.point);
+        iconPosition.transform.position = localIconScreen;
+    }
+}
+```
+
+Desta forma, temos o código completamente finalizado. O código completo pode ser visto abaixo:
+
+```
+using UnityEngine;
+
+public class Enemy_Radar : MonoBehaviour
+{
+    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject iconPosition;
+    private Renderer rd;
+    private Vector3 localIconScreen;
+
+    void Start()
+    {
+        rd = GetComponent<Renderer>();
+    }
+
+    void Update()
+    {
+        ScreenIcon();
+    }
+
+    private void ScreenIcon()
+    {
+        if (rd.isVisible == false)
+        {
+            if (iconPosition.activeSelf == false && Vector3.Distance(transform.position, player.transform.position) <= 20f) 
+            {
+                iconPosition.SetActive(true);
+            }
+
+            if (iconPosition.activeSelf == true && Vector3.Distance(transform.position, player.transform.position) > 20f)
+            {
+                iconPosition.SetActive(false);
+            }
+
+            Vector2 direction = player.transform.position - transform.position; 
+            int layer_mask = LayerMask.GetMask("CamBox");             RaycastHit2D ray = Physics2D.Raycast(transform.position, direction, 50f, layer_mask); 
+
+            if (ray.collider != null)
+            {
+                if (ray.collider.tag == "MainCamera")
+                {
+                    localIconScreen = Camera.main.WorldToScreenPoint(ray.point);
+                    iconPosition.transform.position = localIconScreen;
+                }
+            }
+        }
+        else
+        {
+            if (iconPosition.activeSelf == true)
+            {
+                iconPosition.SetActive(false);
+            }
+        }
+    }
+
+}
+```
+
+Não se esqueça de salvar seu script após realizar todas as alterações, senão as novas linhas de código não serão executadas na Unity!
+
+Agora, devemos fazer algumas configurações na Unity. Primeiro, na MainCamera, altere a Layer que está em Default criando uma nova com o nome CamBox e selecione-a. Em seguida, é necessário adicionar um Box Collider 2D à câmera. Adicione este colisor e defina onde quer que as bordas dele estejam. É interessante que as bordas estejam um pouco recuadas com relação à tela para que o ícone possa ser totalmente exibido. As linhas verdes definem a área de colisão e as brancas definem a área de exibição.
+
+![05](https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/4cfd05b7-54e5-45bc-bb11-5cbd2a15640b)
+
+Por fim, é necessário definir que este colisor não atue com os demais colisores do cenário pois, ao termos uma cena completa com vários elementos, não é interessante que a câmera choque com eles.
+
+Para isto, basta ir em Edit -> Project Setting -> Physics 2D -> Layer Collision Matrix e desmarcar a interação da CamBox com o Default. Assim, não haverá interação entre o colisor da câmera e os outros colisores que estiverem na mask Default.
+
+![06](https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/f51db9c8-0897-490a-859e-3f920a3229e5)
+
+Assim, basta testar para verificar o resultado.
+
+https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/6b622f00-8e35-4505-8602-1b413596f1d3
+
+Caso desejar uma identificação mais precisa, é interessante conferir a posição dos pontos de pivot e referência do inimigo e do ícone também, para que fiquem corretamente centralizados.
+
+## Ícone para vários inimigos
+
+Da forma que fizemos, o ícone funciona apenas para um inimigo específico. Se quisermos que cada inimigo possua um ícone de radar, uma opção é criar uma imagem no Canvas para cada um deles. Isso é algo problemático e cansativo, pois podemos ter dezenas de inimigos em nosso jogo, ou até mesmo inimigos infinitos, spawnando a todo o momento.
+
+Para resolver este problema, iremos utilizar de Prefabs. Prefabs são objetos que criamos em nossa cena, definimos suas características, componentes e parâmetros e salvamos eles como “objetos padrão”. Assim, podemos replicar este objeto infinita vezes, sempre que necessário, e destruí-lo quando não precisarmos mais, facilitando a produção de um mesmo objeto na cena. Por exemplo, se temos um canhão que dispara várias projéteis e eles explodem quando entram em contato com algo, podemos produzir um Prefab deste projétil e, sempre que o canhão disparar, instanciamos um novo projétil, criando-o na cena, e o destruímos assim que tocar em algo. Repetimos este processo infinitas vezes, de forma que teremos sempre apenas um projétil em cena, evitando que tenhamos dezenas ou centenas de um mesmo objeto. Os Prefabs servem tanto para organização da cena como para redução de processamento.
+
+Então, como criamos um Prefab? Basta arrastar o objeto para suas pastas de Project. Assim, teremos o Prefab pronto.
+
+Então, vamos começar habilitando o ícone presente na cena e transformando-o em Prefab. Depois, vamos apagar o ícone na tela e atualizar nos componentes do inimigo o parâmetro iconPosition, colocando o Prefab que criamos como sendo seu valor.
+
+https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/ba3741ad-476e-4186-9bfc-8bdcccfae0fe
+
+Agora, precisamos realizar algumas alterações no código. A primeira delas é adicionar um novo parâmetro no começo do código. Este parâmetro irá representar o GameObject do Prefab que será instanciado.
+
+```
+private GameObject icon;
+```
+
+Em seguida, precisamos substituir o if que verifica se o ícone está ativo e o if que verifica se o ícone está desativado. Primeiro, que agora iremos verificar se o ícone está instanciado ou não, ao invés de ativado. Em seguida, ao invés de ativá-lo, vamos instanciá-lo. Ao instanciá-lo, estamos o criando na cena. E ao invés de desativá-lo, vamos destruí-lo, para evitar que ocupe espaço na cena sem ser necessário. Iremos utilizar null para verificar se o objeto icon que criamos está vazio ou se possui algum objeto definido a ele. Isso será o bastante para determinar se o ícone existe ou não.
+
+```
+if (icon == null && Vector3.Distance(transform.position, player.transform.position) <= 20f)
+{
+    icon = Instantiate(iconPosition, new Vector3(0, 0, 0), Quaternion.identity);
+    icon.transform.SetParent(GameObject.FindGameObjectWithTag("Canvas").transform, false);
+}
+
+if (icon != null && Vector3.Distance(transform.position, player.transform.position) > 20f)
+{
+    Destroy(icon);
+}
+```
+
+Definimos que o novo GameObject icon irá receber a instância do ícone que será criado. Para instanciá-lo, definimos primeiro o objeto que queremos que seja instanciado, que no caso, é o objeto iconPosition. Este objeto possui o Prefab que criamos, conforme acabamos de fazer. Em seguida, definimos sua posição como sendo a origem e sua rotação como sendo a rotação que o objeto já possuir. Na linha seguinte definimos que ele será filho de um objeto que estiver em cena e que possuir a tag “Canvas”. Objetos de UI devem ser filhos do Canvas, então, precisamos definir isso. Para tal, vamos voltar à Unity e criar uma tag chamada “Canvas” e coloca-la no objeto Canvas.
+
+![07](https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/2018a38d-d2f0-4386-a2c2-dbf7495d1e06)
+
+Continuando com o script, precisamos adicionar uma nova condição ao if que verifica a tag do objeto ao qual o Raycast está colidindo. Precisamos que ele verifique se icon não é null, pois, se fizermos qualquer ação a um objeto que é null, teremos um erro no nosso jogo. Então, para evitar o erro, realizamos esta verificação. As ações após a condição continuam as mesmas.
+
+```
+if (ray.collider.tag == "MainCamera" && icon != null)
+{
+    localIconScreen = Camera.main.WorldToScreenPoint(ray.point);
+    icon.transform.position = localIconScreen; 
+}
+```
+
+Por fim, ao final, temos o else que serve para identificar se o inimigo foi renderizado. Queremos que, caso o ícone existir, ele seja destruído quando o inimigo for renderizado.
+
+```
+else
+{
+    if (icon != null)
+    {
+        Destroy(icon);
+    }
+}
+```
+
+Assim, o novo código completo será:
+
+```
+using UnityEngine;
+
+public class Enemy_Radar : MonoBehaviour
+{
+    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject iconPosition;
+    private GameObject icon;
+    private Renderer rd;
+    private Vector3 localIconScreen;
+
+    void Start()
+    {
+        rd = GetComponent<Renderer>();
+    }
+    void Update()
+    {
+        ScreenIcon();
+    }
+
+    private void ScreenIcon()
+    {
+        if (rd.isVisible == false) 
+        {
+            if (icon == null && Vector3.Distance(transform.position, player.transform.position) <= 20f) 
+            {
+                icon = Instantiate(iconPosition, new Vector3(0, 0, 0), Quaternion.identity);
+                icon.transform.SetParent(GameObject.FindGameObjectWithTag("Canvas").transform, false);
+            }
+
+            if (icon != null && Vector3.Distance(transform.position, player.transform.position) > 20f)
+            {
+                Destroy(icon);
+            }
+
+            Vector2 direction = player.transform.position - transform.position; 
+            int layer_mask = LayerMask.GetMask("CamBox"); 
+            RaycastHit2D ray = Physics2D.Raycast(transform.position, direction, 50f, layer_mask); 
+
+            if (ray.collider != null)
+            {
+                if (ray.collider.tag == "MainCamera" && icon != null)
+                {
+                    localIconScreen = Camera.main.WorldToScreenPoint(ray.point);
+                    icon.transform.position = localIconScreen;
+                }
+            }
+        }
+        else
+        {
+            if (icon != null)
+            {
+                Destroy(icon);
+            }
+        }
+    }
+
+}
+```
+
+Podemos testar com um inimigo e adicionar diversos inimigos, duplicando o original, para observar que está tudo funcionando corretamente.
+
+https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/a4d6e2e5-a279-442f-87d2-04831c1a375f
