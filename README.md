@@ -194,7 +194,8 @@ public class Enemy_Radar : MonoBehaviour
             }
 
             Vector2 direction = player.transform.position - transform.position; 
-            int layer_mask = LayerMask.GetMask("CamBox");             RaycastHit2D ray = Physics2D.Raycast(transform.position, direction, 50f, layer_mask); 
+            int layer_mask = LayerMask.GetMask("CamBox");
+            RaycastHit2D ray = Physics2D.Raycast(transform.position, direction, 50f, layer_mask); 
 
             if (ray.collider != null)
             {
@@ -235,7 +236,7 @@ https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/6b622f00
 
 If you want a more precise identification, it is interesting to check the position of the pivot and reference points of the enemy and the icon as well, so that they are correctly centered.
 
-## Icon for various enemies
+## Icons for various enemies
 
 The way we did it, the icon only works for a specific enemy. If we want each enemy to have a radar icon, one option is to create an image on Canvas for each of them. This is problematic and tiring, as we can have dozens of enemies in our game, or even infinite enemies, spawning all the time.
 
@@ -493,7 +494,7 @@ https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/cb7a2c6a
 
 Mas não é interessante que o ícone apareça no meio da tela, correto? Então, o próximo passo é fazermos com que ele apareça apenas no canto da tela e na direção de onde o inimigo estiver vindo.
 
-## Direction and proximity icon
+## Direção e ícone de proximidade
 
 Iremos continuar utilizando o mesmo script, mas iremos adicionar novas linhas de código.
 
@@ -557,7 +558,8 @@ public class Enemy_Radar : MonoBehaviour
             }
 
             Vector2 direction = player.transform.position - transform.position; 
-            int layer_mask = LayerMask.GetMask("CamBox");             RaycastHit2D ray = Physics2D.Raycast(transform.position, direction, 50f, layer_mask); 
+            int layer_mask = LayerMask.GetMask("CamBox");
+            RaycastHit2D ray = Physics2D.Raycast(transform.position, direction, 50f, layer_mask); 
 
             if (ray.collider != null)
             {
@@ -598,7 +600,7 @@ https://github.com/MarconyxD/radar-for-enemies-unity-2d/assets/71736128/6b622f00
 
 Caso desejar uma identificação mais precisa, é interessante conferir a posição dos pontos de pivot e referência do inimigo e do ícone também, para que fiquem corretamente centralizados.
 
-## Ícone para vários inimigos
+## Ícones para vários inimigos
 
 Da forma que fizemos, o ícone funciona apenas para um inimigo específico. Se quisermos que cada inimigo possua um ícone de radar, uma opção é criar uma imagem no Canvas para cada um deles. Isso é algo problemático e cansativo, pois podemos ter dezenas de inimigos em nosso jogo, ou até mesmo inimigos infinitos, spawnando a todo o momento.
 
